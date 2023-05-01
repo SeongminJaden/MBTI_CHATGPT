@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<link rel="stylesheet" href="./index.css">
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="./main.js"></script>
+<head>
+	<title>MBTI로 자기소개서 작성하기!</title>
+	<style>
+	</style>
+</head>
+<body>
+	<div class="main">
+		<P>당신은 어떤 유형의 사람인가요?
+		<div class="mbti_container">
+			<input type="text" id="keywords" name="keywords" required placeholder="MBTI 입력"/>
+			<input type="text" id="name" name="name" required placeholder="이름 입력"/>
+			<input type="text" id="age" name="age" required placeholder="나이 입력"/>
+			<input type="text" id="sex" name="sex" required placeholder="성별 입력"/>
+			<input type="text" id="school" name="school" required placeholder="전공 입력"/>
+			<input type="text" id="comp" name="comp" required placeholder="희망 회사 입력"/>
+			<button onclick="search();">입력</button>
+		</div>
+		<P>당신의 MBTI 유형은<p id="two"></p><P>이군요! 당신의 MBTI를 토대로 자소서를 작성해드릴게요!</P>
+		<p id="two"></p>
+	</div>
+    <div id="result"></div>
+	<script>
+		function search() {
+			var a=document.querySelector("#keywords").value;
+            document.querySelector("#two").innerText=a;
+            document.querySelector("#keywords").value="";
+            document.querySelector("#keywords").focus();
+		  const api_key = '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'
+		  const keywords = document.getElementById('keywords').value
+		  const name = document.getElementById('name').value
+		  const age = document.getElementById('age').value
+		  const sex = document.getElementById('sex').value
+		  const school = document.getElementById('school').value
+		  const comp = document.getElementById('comp').value
+		  const messages = [
+			{ role: 'system', content: '너는 지금 취업준비생이고 취업준비를 위한 자기소개서를 작성하고있어. 이름은'+name+'이고 나이는'+age+'살이고 성별은'+sex+'야' },
+			{ role: 'user', content: '너의 MBTI는'+keywords +'인데 너는'+school+'을 전공했고'+comp+'에 입사하려해 너를 소개하고 배운걸 소개하는 자기소개서를 2000자 이상으로 작성해봐' },
+		  ]
+		  const config = {
+			headers: {
+			  Authorization: `Bearer ${api_key}`,
+			  'Content-Type': 'application/json',
+			},
+		  }
+		  const data = {
+			model: 'gpt-3.5-turbo',
+			temperature: 0.5,
+			n: 1,
+			messages: messages,
+		  }
+		  axios
+			.post('https://api.openai.com/v1/chat/completions', data, config)
+			.then(function (response) {
+			  let resultDiv = document.getElementById('result')
+			  resultDiv.innerHTML = ''
+			  response.data.choices.forEach(function (choice, index) {
+				resultDiv.innerHTML += `<div>${choice.message.content
+				  .split('\n')
+				  .join('<br/>')}</div>`
+			  })
+			})
+			.catch(function (error) {
+			  console.error(error)
+			})
+		}
+	  </script>
+</body>
+</html>
